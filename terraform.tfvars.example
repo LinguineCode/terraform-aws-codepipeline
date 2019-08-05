@@ -1,0 +1,57 @@
+name = "voyent-codepipeline-projects"
+pipelines = [
+  {
+    name = "MyProject"
+    additional_iam_policies = [
+      {
+        actions = [
+          "ec2:Describe*",
+        ]
+
+        resources = [
+          "*"
+        ]
+      },
+      {
+        actions = [
+          "ssm:Describe*",
+        ]
+
+        resources = [
+          "arn:aws:ssm:us-west-2:123456789012:document/MyDocument-*"
+        ]
+      },
+    ]
+
+    stages = [
+      {
+        name = "Source"
+        action = {
+          name             = "Source"
+          category         = "Source"
+          owner            = "ThirdParty"
+          provider         = "GitHub"
+          version          = "1"
+          output_artifacts = ["SourceArtifact"]
+
+          configuration = {
+            Owner  = "myname"
+            Repo   = "myrepo"
+            Branch = "master"
+          }
+        }
+      },
+      {
+        name = "Approval"
+
+        action = {
+          name     = "ApprovalOrDeny"
+          category = "Approval"
+          owner    = "AWS"
+          provider = "Manual"
+          version  = "1"
+        }
+      }
+    ]
+  }
+]
